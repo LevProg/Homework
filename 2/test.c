@@ -1,4 +1,4 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <locale.h>
 #include <string.h>
@@ -11,20 +11,19 @@ int main(void)
     FILE* file;
     FILE* newFile;
     char filename[50];
-    int needLen;
-    printf("Enter file name:\n");
+    int newLineLenght;
+    printf("Введите имя файла:\n");
     scanf("%49s", &filename);
-    printf("Enter needed string lenght:\n");
-    scanf("%d", &needLen);
+    printf("Введите длину строки:\n");
+    scanf("%d", &newLineLenght);
     char s[LEN];
     int lineLen = 0;
     int curPos = 0;
     int isThereSpaces = 0;
-    char spaces[100];
     char ch[2];
     file = fopen(filename, "r");
     newFile = fopen("newData.txt", "w");
-    needLen--;
+    newLineLenght--;
     while (fgets(s, sizeof(s), file) != NULL) {
         printf("%s", s);
         for (int i = 0; s[i] != '\0'; i++) {
@@ -34,14 +33,14 @@ int main(void)
             }
         }
         if (isThereSpaces == 1) {
-            if (lineLen > needLen) {
+            if (lineLen > newLineLenght) {
                 curPos = 0;
                 for (int i = 0; i <= lineLen; i++) {
-                    if (i >= needLen + curPos) {
+                    if (i >= newLineLenght + curPos) {
                         for (int k = i; k > 0; k--) {
                             if (s[k] == ' ') {
                                 s[k] = '\n';
-                                i = k + needLen;
+                                i = k + newLineLenght;
                                 curPos = k;
                                 break;
                             }
@@ -51,11 +50,11 @@ int main(void)
             }
         }
         else{
-            if (lineLen > needLen) {
-                for (int k = 1; k <= lineLen / needLen;k++) {
-                    ch[0] = s[needLen*k];
-                    s[needLen *k] = '\n';
-                    for (int i = needLen * k; i < lineLen-1; i++) {
+            if (lineLen > newLineLenght) {
+                for (int k = 1; k <= lineLen / newLineLenght;k++) {
+                    ch[0] = s[newLineLenght*k];
+                    s[newLineLenght *k] = '\n';
+                    for (int i = newLineLenght * k; i < lineLen-1; i++) {
                         ch[1] = s[i + 1];
                         s[i + 1]=ch[0];
                         ch[0] = ch[1];
