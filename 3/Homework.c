@@ -2,24 +2,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void print(int n)
+void print(int n, int base)
 {
     printf("%\n");
-    for (int base = 2; base <= 16; base+=14) {
-        char nums[100];
-        int i = 0;
-        int number = n;
-        while (number != 0) {
-            int temp = 0;
-            temp = number % base;
-            nums[i] = (temp < 10) ? temp + 48 : temp + 55;
-            i++;
-            number /= base;
-        }
-        for (int j = i - 1; j >= 0; j--)
-            printf("%c", nums[j]);
-        printf("%\n");
-    }
+	char nums[100];
+	int i = 0;
+	int number = n;
+	while (number != 0) {
+		int temp = 0;
+		temp = number % base;
+		nums[i] = (temp < 10) ? temp + 48 : temp + 55;
+		i++;
+		number /= base;
+	}
+	for (int j = i - 1; j >= 0; j--)
+		printf("%c", nums[j]);
+	printf("%\n");
 
 }
 
@@ -35,7 +33,8 @@ int main(void)
         b=b>>1;
         cnt++;
     }
-    print(a);
+    print(a,2);
+	print(a,16);
     for (int i = 0; i < cnt/2; i++) {
         mask = 1<<i;
         mask = mask & a;
@@ -45,7 +44,8 @@ int main(void)
             a = a ^ ((1 << i) | (1 << cnt - 1 - i));
         }
     }
-    print(a);
+    print(a,2);
+	print(a,16);
 
     return 0;
 }
