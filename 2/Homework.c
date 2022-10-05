@@ -32,7 +32,7 @@ int main(void)
                 isThereSpaces = 1;
             }
         }
-        if (isThereSpaces == 1) {
+        if (isThereSpaces) {
             if (lineLen > newLineLenght) {
                 curPos = 0;
                 for (int i = 0; i <= lineLen; i++) {
