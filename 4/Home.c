@@ -1,7 +1,7 @@
 ﻿#include "framework.h"
 #include "Home.h"
 #include "Windowsx.h"
-#include "stdio.h"
+#include "functions.h"
 
 #define MAX_LOADSTRING 100
 
@@ -93,84 +93,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-int isButtonWasDown = 0;
-POINT pt1;
-POINT pt2;
-void Draw(HDC hdc) {
-    HPEN hBlackPen, hColorPen, hOldPen;
-    HBRUSH hBlackBrush, hWhiteBrush;
-
-    hWhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
-    hBlackBrush = CreateSolidBrush(RGB(0, 0, 0));
-    hBlackPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-    if (hdc) {
-        SelectObject(hdc, hBlackPen);
-        SelectObject(hdc, hBlackBrush);
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if ((i + j) % 2 == 0) {
-                    SelectObject(hdc, hWhiteBrush);
-                }
-                else {
-                    SelectObject(hdc, hBlackBrush);
-                }
-                Rectangle(hdc, i * 50, j * 50, (i + 1) * 50, (j + 1) * 50);
-            }
-        }
-    }
-    DeleteObject(hBlackPen);
-    DeleteObject(hBlackBrush);
-    DeleteObject(hWhiteBrush);
-}
-void ButtonManager(HWND hWnd,LPARAM lParam) {
-    HDC hdc = GetDC(hWnd);
-    Draw(hdc);
-    HPEN hBlackPen, hColorPen, hOldPen;
-    HBRUSH hBlackBrush, hWhiteBrush;
-
-    hWhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
-    hBlackBrush = CreateSolidBrush(RGB(0, 0, 0));
-    hBlackPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-
-    if (isButtonWasDown == 0) {
-        isButtonWasDown = 1;
-        pt1.x = GET_X_LPARAM(lParam) / 50;
-        pt1.y = GET_Y_LPARAM(lParam) / 50;
-    }
-    else {
-        pt2.x = GET_X_LPARAM(lParam) / 50;
-        pt2.y = GET_Y_LPARAM(lParam) / 50;
-        Draw(hdc);
-        if (hdc) {
-            if (((pt1.x + pt1.y) % 2) == ((pt2.x + pt2.y) % 2)) {
-                hColorPen = CreatePen(PS_SOLID, 5, RGB(0, 255, 0));
-            }
-            else {
-                hColorPen = CreatePen(PS_SOLID, 5, RGB(255, 0, 0));
-            }
-            SelectObject(hdc, hColorPen);
-            if ((pt1.x + pt1.y) % 2 == 0) {
-                SelectObject(hdc, hWhiteBrush);
-            }
-            else {
-                SelectObject(hdc, hBlackBrush);
-            }
-            Rectangle(hdc, pt1.x * 50, pt1.y * 50, (pt1.x + 1) * 50, (pt1.y + 1) * 50);
-            if ((pt2.x + pt2.y) % 2 == 0) {
-                SelectObject(hdc, hWhiteBrush);
-            }
-            else {
-                SelectObject(hdc, hBlackBrush);
-            }
-            Rectangle(hdc, pt2.x * 50, pt2.y * 50, (pt2.x + 1) * 50, (pt2.y + 1) * 50);
-            ReleaseDC(hWnd, hdc);
-            DeleteObject(hColorPen);
-
-        }
-        isButtonWasDown = 0;
-    }
-}
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
@@ -196,14 +118,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_LBUTTONDOWN:
-        {   
-            ButtonManager(hWnd, lParam);
+        {  
+            HandleClick(hWnd, lParam);
         }
         break;
     case WM_PAINT:
         {
             hdc = BeginPaint(hWnd, &ps);
-            Draw(hdc);
+            DrawField(hdc);
             EndPaint(hWnd, &ps);
         }
         break;
