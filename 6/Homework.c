@@ -6,9 +6,7 @@
 
 int main(void)
 {
-    struct buffer buffer1,buffer2;
-    int text_size;
-    int buffer_size;
+    struct buffer *buffer1,*buffer2;
     if (scanf("%d", &buffer_size)) {
         SystemInit(buffer_size);
         buffer1 = open("data.txt", "a+");

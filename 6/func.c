@@ -8,29 +8,35 @@
 SystemInit(size) {
     buffer_size = size;
 }
-SystemClose(struct buffer buf) {
-    free(buf.data);
+SystemClose(struct buffer* buf) {
+    free(buf->data);
+    free(buf);
 }
-struct buffer open(char* name, char* mode) {
+struct buffer* open(char* name, char* mode) {
     FILE* fptr;
     fptr = fopen(name, mode);
-    struct buffer Buf = { fptr, 0, malloc(buffer_size)};
+    struct buffer *Buf = (struct buffer* )malloc(sizeof(struct buffer));
+    Buf->data  = malloc(buffer_size);
+    Buf->file = fptr;
+    Buf->filename = name;
+    Buf->data_size = 0;
     return Buf;
 }
-close(struct buffer buf) {
-    fclose(buf.file);
+close(struct buffer* buf) {
+    fclose(buf->file);
 }
-read(struct buffer buf, int size_to_read) {
+read(struct buffer *buffer, int size_to_read) {
     int i = 0;
     char ch;
+    printf("read from %s:  ", buffer->filename);
     while (i <= size_to_read) {
-        if ((ch = fgetc(buf.file)) != EOF) {
+        if ((ch = fgetc(buffer->file)) != EOF) {
             if (i < buffer_size) {
-                buf.data[i] = ch;
+                buffer->data[i] = ch;
             }
             else {
-                buf.data_size = buffer_size;
-                printf("%.*s", buf.data_size, buf.data);
+                buffer->data_size = buffer_size;
+                printf("%.*s", buffer->data_size, buffer->data);
                 size_to_read -= i;
                 i = 0;
             }
@@ -38,36 +44,37 @@ read(struct buffer buf, int size_to_read) {
         }
         else
         {
-            buf.data_size = i;
-            printf("%.*s\n", buf.data_size, buf.data);
+            buffer->data_size = i;
+            printf("%.*s\n", buffer->data_size, buffer->data);
             break;
         }
     }
 }
-write_in_file(struct buffer buf) {
-    for (int i = 0; i < buf.data_size; i++) {
-        fputc(buf.data[i], buf.file);
+write_in_file(struct buffer* buf) {
+    for (int i = 0; i < buf->data_size; i++) {
+        fputc(buf->data[i], buf->file);
     }
 }
-write(struct buffer buf, int size_to_write) {
-    char text[100];    
-    if (scanf("%s", &text)) {
-        int i = 0;
-        int j = 0;
-        while (j <= strlen(text)) {
-            if (i < buffer_size) {
-                buf.data[i] = text[j];
-            }
-            else {
-                buf.data = i;
-                write_in_file(buf);
-                i = 0;
-                buf.data_size = i;
-            }
-            i++;
-            j++;
+char* slice(char* s, int from){
+    return s + from;
+}
+write(struct buffer * buffer, int size_to_write) {
+    char text[100];
+    gets_s(text, 1);
+    printf("write in %s: ", buffer->filename);
+    if (fgets(text, size_to_write, stdin)) {
+        if (strlen(text) < buffer_size) {
+            strcpy(buffer->data, text);
+            buffer->data_size = strlen(text);
+            write_in_file(buffer);
         }
-        buf.data_size = i-1;
-        write_in_file(buf);
+        else {
+            for (int i = 0; i * buffer_size < strlen(text); i++) {
+                strncpy(buffer->data,text, buffer_size);
+                buffer->data_size = buffer_size;
+                write_in_file(buffer);
+                slice(text, (i + 1) * buffer_size);
+            }
+        }
     }
 }
